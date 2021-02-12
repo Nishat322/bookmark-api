@@ -20,7 +20,11 @@ const morganOption = (NODE_ENV === 'production')
 app.use(morgan(morganOption));
 app.use(cors());
 app.use(helmet());
-app.use(validateBearerToken);
+//app.use(validateBearerToken);
+
+app.get('/', (req,res) => {
+  res.status(200).send('Hello, world!');
+});
 
 app.use(bookmarkRouter);
 app.use(errorHandler);

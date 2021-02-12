@@ -12,7 +12,7 @@ Run the tests `npm test`
 
 Run migrations `npm run migrate`
 
-Seed the database `psql -U Nishat -d bookmarks-f ./seeds/seed.bookmarks.sql`
+Seed the database `psql -U Nishat -d bookmarks -f ./seeds/seed.bookmarks.sql`
 
 ## Deploying
 
