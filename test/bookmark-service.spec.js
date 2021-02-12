@@ -72,6 +72,27 @@ describe('Bookmarks service object', function(){
                     expect(actual).to.eql([]);
                 });
         });
+
+        it('insertBookmark() inserts a new bookmark and resolves with a new bookmark with an \'id\'', () => {
+            const newBookmark = {
+                title: 'New test Bookmark',
+                url: 'newtestbookmark.com',
+                description: 'New test description',
+                rating: '3'
+            };
+
+            return BookmarkService.insertBookmark(db, newBookmark)
+                .then(actual => {
+                    expect(actual).to.eql({
+                        id: 1,
+                        title: newBookmark.title,
+                        url: newBookmark.url,
+                        description: newBookmark.description,
+                        rating: newBookmark.rating
+                    });
+                });
+
+        });
     });
 });
 
