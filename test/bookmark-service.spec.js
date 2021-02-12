@@ -107,6 +107,28 @@ describe('Bookmarks service object', function(){
                     expect(allBookmarks).to.eql(allBookmarks);
                 });
         });
+
+        it('updateBookmark() updates a bookmark by id from \'bookmarks\' table', () => {
+            const idOfBookmarkToUpdate = 3;
+            const newBookmarkData = {
+                title: 'Updated Bookmark',
+                url: 'https://updatedbookmark.com',
+                description: 'Updated Description',
+                rating: '4' 
+            };
+
+            return BookmarkService.updateBookmark(db, idOfBookmarkToUpdate, newBookmarkData)
+                .then(() => BookmarkService.getById(db, idOfBookmarkToUpdate))
+                .then(bookmark => {
+                    expect(bookmark).to.eql({
+                        id: idOfBookmarkToUpdate,
+                        title: newBookmarkData.title,
+                        url: newBookmarkData.url,
+                        description: newBookmarkData.description,
+                        rating: newBookmarkData.rating,
+                    });
+                });
+        });
     });
 
     context('Given \'bookmarks\' has no data', () => {
