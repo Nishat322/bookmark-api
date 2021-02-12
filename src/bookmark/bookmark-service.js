@@ -1,8 +1,8 @@
 /* eslint-disable indent */
 'use strict';
 const BookmarkService = {
-    getAllBookmarks(){
-        return 'Got all Bookmarks';
+    getAllBookmarks(knex){
+        return knex.select('*').from('bookmarks');
     }
 };
 

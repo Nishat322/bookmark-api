@@ -9,18 +9,21 @@ describe('Bookmarks service object', function(){
     let db;
     let testBookmarks = [
         {   
+            id: 1,
             title: 'Thinkful',
             url: 'https://www.thinkful.com',
             description: 'Think outside the classroom',
             rating: '5' 
         },
         { 
+            id: 2,
             title: 'Google',
             url: 'https://www.google.com',
             description: 'Where we find everything else',
             rating: '4' 
         },
         { 
+            id: 3,
             title: 'MDN',
             url: 'https://developer.mozilla.org',
             description: 'The only place to find web documentation',
@@ -35,6 +38,8 @@ describe('Bookmarks service object', function(){
         });
     });
 
+    before(() => db('bookmarks').truncate());
+
     before(() => {
         return db   
             .into('bookmarks')
@@ -45,7 +50,16 @@ describe('Bookmarks service object', function(){
 
     describe('getAllBookmarks', function(){
         it('resolves all bookmarks from \'bookmarks\' table', () => {
-            
+            return BookmarkService.getAllBookmarks(db)
+                .then(actual => {
+                    expect(actual).to.eql(testBookmarks.map(bookmark => ({
+                        id: bookmark.id,
+                        title: bookmark.title,
+                        url: bookmark.url,
+                        description: bookmark.description,
+                        rating: bookmark.rating
+                    })));
+                });
         });
     });
 });
