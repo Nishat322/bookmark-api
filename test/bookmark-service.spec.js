@@ -40,16 +40,18 @@ describe('Bookmarks service object', function(){
 
     before(() => db('bookmarks').truncate());
 
-    before(() => {
-        return db   
-            .into('bookmarks')
-            .insert(testBookmarks);
-    });
+    afterEach(() => db('bookmarks').truncate());
 
     after(() => db.destroy());
 
-    describe('getAllBookmarks', function(){
-        it('resolves all bookmarks from \'bookmarks\' table', () => {
+    context('Given \'bookmarks\' has data', () => {
+        before(() => {
+            return db   
+                .into('bookmarks')
+                .insert(testBookmarks);
+        });
+
+        it('getAllBookmarks() resolves all bookmarks from \'bookmarks\' table', () => {
             return BookmarkService.getAllBookmarks(db)
                 .then(actual => {
                     expect(actual).to.eql(testBookmarks.map(bookmark => ({
@@ -59,6 +61,15 @@ describe('Bookmarks service object', function(){
                         description: bookmark.description,
                         rating: bookmark.rating
                     })));
+                });
+        });
+    });
+
+    context('Given \'bookmarks\' has no data', () => {
+        it('getAllBookmarks() resolves an empty array', () => {
+            return BookmarkService.getAllBookmarks(db)
+                .then(actual => {
+                    expect(actual).to.eql([]);
                 });
         });
     });
