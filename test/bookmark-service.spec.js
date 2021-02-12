@@ -80,6 +80,33 @@ describe('Bookmarks service object', function(){
                 });
 
         });
+
+        it('deleteBookmark() removes a bookmark by id from \'bookmarks\' table', () => {
+            const bookmarkId = 2;
+
+            return BookmarkService.deleteBookmark(db, bookmarkId)
+                .then(() => BookmarkService.getAllBookmarks(db))
+                .then(allBookmarks => {
+                    [
+                        {   
+                            id: 1,
+                            title: 'Thinkful',
+                            url: 'https://www.thinkful.com',
+                            description: 'Think outside the classroom',
+                            rating: '5' 
+                        },
+                        { 
+                            id: 3,
+                            title: 'MDN',
+                            url: 'https://developer.mozilla.org',
+                            description: 'The only place to find web documentation',
+                            rating: '5' 
+                        },
+                    ];
+                    const expected = testBookmarks.filter(bookmark => bookmark.id !== bookmarkId);
+                    expect(allBookmarks).to.eql(allBookmarks);
+                });
+        });
     });
 
     context('Given \'bookmarks\' has no data', () => {
