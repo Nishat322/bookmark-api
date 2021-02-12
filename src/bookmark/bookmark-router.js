@@ -19,19 +19,11 @@ bookmarkRouter
 
     if(!title){
         logger.error('Title is required');
-        return res.status(400).send('Invalid data');
+        return res.status(400).send('Title is missing');
     }
     if(!url){
         logger.error('Url is required');
-        return res.status(400).send('Invalid data');
-    }
-    if(!description){
-        logger.error('Description is required');
-        return res.status(400).send('Invalid data');
-    }
-    if(!rating && typeof(rating)!== 'number'){
-        logger.error('Rating is required');
-        return res.status(400).send('Invalid data');
+        return res.status(400).send('Url is missing');
     }
 
     const id = uuid();
