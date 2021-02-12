@@ -13,6 +13,14 @@ const BookmarkService = {
             .then(rows => {
                 return rows[0];
             });
+    },
+
+    getById(knex, bookmarkId){
+        return knex
+            .from('bookmarks')
+            .select('*')
+            .where('id', bookmarkId)
+            .first();
     }
 };
 

@@ -45,7 +45,7 @@ describe('Bookmarks service object', function(){
     after(() => db.destroy());
 
     context('Given \'bookmarks\' has data', () => {
-        before(() => {
+        beforeEach(() => {
             return db   
                 .into('bookmarks')
                 .insert(testBookmarks);
@@ -62,6 +62,23 @@ describe('Bookmarks service object', function(){
                         rating: bookmark.rating
                     })));
                 });
+        });
+
+        it('getById() resolves a bookmark by id from \'bookmarks\' table', () => {
+            const secondId = 2;
+            const secondTestBookmark = testBookmarks[secondId -1];
+
+            return BookmarkService.getById(db, secondId)
+                .then(actual => {
+                    expect(actual).to.eql({
+                        id: secondId,
+                        title: secondTestBookmark.title,
+                        url: secondTestBookmark.url,
+                        description: secondTestBookmark.description,
+                        rating: secondTestBookmark.rating
+                    });
+                });
+
         });
     });
 
