@@ -83,7 +83,7 @@ describe('Bookmarks service object', function(){
                         },
                     ];
                     const expected = testBookmarks.filter(bookmark => bookmark.id !== bookmarkId);
-                    expect(allBookmarks).to.eql(allBookmarks);
+                    expect(allBookmarks).to.eql(expected);
                 });
         });
 
