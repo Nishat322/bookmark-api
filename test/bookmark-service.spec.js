@@ -4,7 +4,7 @@ require('dotenv').config();
 const { expect } = require('chai');
 const knex = require('knex');
 const BookmarkService = require('../src/bookmark/bookmark-service');
-const makeBookmarksArray = require('./bookmarks.fixtures');
+const {makeBookmarksArray} = require('./bookmarks.fixtures');
 
 describe('Bookmarks service object', function(){
     let db;

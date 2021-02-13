@@ -26,4 +26,6 @@ function makeBookmarksArray(){
     ];
 }
 
-module.exports = makeBookmarksArray;
+module.exports = {
+    makeBookmarksArray
+};
