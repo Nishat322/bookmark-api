@@ -20,35 +20,29 @@ bookmarkRouter
             })
             .catch(next);
     })
-    .post(bodyParser, (req,res) => {
+    .post(bodyParser, (req,res,next) => {
         const {title, url, description, rating} = req.body;
+        const newBookmark = {title, url, description, rating};
+        const knexInstance = req.app.get('db');
 
-    if(!title){
-        logger.error('Title is required');
-        return res.status(400).send('Title is missing');
-    }
-    if(!url){
-        logger.error('Url is required');
-        return res.status(400).send('Url is missing');
-    }
+        if(!newBookmark.title){
+            logger.error('Title is required');
+            return res.status(400).json('Title is missing');
+        }
+        if(!newBookmark.url){
+            logger.error('Url is required');
+            return res.status(400).json('Url is missing');
+        }
 
-    const id = uuid();
-
-    const bookmark = {
-        id,
-        title,
-        url,
-        description,
-        rating
-    };
-
-    bookmarks.push(bookmark);
-
-    logger.info(`Bookmark with id ${id} created`);
-    res
-        .status(201)
-        .location(`http://localhost:8000/bookmarks/${id}`)
-        .json(bookmark);
+        BookmarkService.insertBookmark(knexInstance, newBookmark)
+            .then(bookmark => {
+                logger.info(`Bookmark with id ${bookmark.id} created`);
+                res
+                    .status(201)
+                    .location(`/bookmarks/${bookmark.id}`)
+                    .json(bookmark);
+            })
+            .catch(next);
     });
 
 bookmarkRouter

@@ -79,4 +79,32 @@ describe.only('Bookmark Endpoints', () => {
             });
         });
     });
+
+    describe.only('POST /bookmarks', () => {
+        it('creates a bookmark, responding with 201 and the new bookmark', () => {
+            const newBookamrk = {  
+                title: 'New Title',
+                url: 'https://www.newbookmark.com',
+                description: 'A new bookmark',
+                rating: '5' 
+            };
+
+            return supertest(app)
+                .post('/bookmarks')
+                .send(newBookamrk)
+                .expect(201)
+                .expect(res => {
+                    expect(res.body.title).to.eql(newBookamrk.title);
+                    expect(res.body.url).to.eql(newBookamrk.url);
+                    expect(res.body.description).to.eql(newBookamrk.description);
+                    expect(res.body.rating).to.eql(newBookamrk.rating);
+                    expect(res.headers.location).to.eql(`/bookmarks/${res.body.id}`);
+                })
+                .then(postRes =>
+                    supertest(app)
+                        .get(`/bookmarks/${postRes.body.id}`)
+                        .expect(postRes.body)
+                );
+        });
+    });
 });
