@@ -5,7 +5,7 @@ const {expect} = require('chai');
 const knex = require('knex');
 const app = require('../src/app');
 const supertest = require('supertest');
-const {makeBookmarksArray} = require('./bookmarks.fixtures');
+const {makeBookmarksArray, makeMaliciousArray} = require('./bookmarks.fixtures');
 
 describe.only('Bookmark Endpoints', () => {
     let db;
@@ -50,14 +50,14 @@ describe.only('Bookmark Endpoints', () => {
         });
     });
     
-    describe.only('GET /bookmarks/bookmark_id', () => {
+    describe('GET /bookmarks/bookmark_id', () => {
         context('Given there are no bookmarks in the database', () => {
             it('responds with 404', () => {
                 const bookmarkId = 123456;
 
                 return supertest(app)
                     .get(`/bookmarks/${bookmarkId}`)
-                    .expect(404, {error: {message: 'Bookmark Not Found'}});
+                    .expect(404, {error: {message: 'Bookmark doesn\'t exist'}});
             });
         });
 
@@ -80,13 +80,7 @@ describe.only('Bookmark Endpoints', () => {
         });
 
         context('Given an XSS attack bookmark', () => {
-            const maliciousBookmark = {
-                id: 911,
-                title: 'Naughty naughty very naughty <script>alert("xss");</script>',
-                url: 'http://malicious.com',
-                description: 'Bad image <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">. But not <strong>all</strong> bad.',
-                rating: '1',
-            };
+            const maliciousBookmark = makeMaliciousArray();
             
             beforeEach('insert malicious article', () => {
                 return db
@@ -151,6 +145,42 @@ describe.only('Bookmark Endpoints', () => {
                     .post('/bookmarks')
                     .send(newBookmark)
                     .expect(400, {error: {message: `Missing '${field}' in the request body`}});
+            });
+        });
+    });
+
+    describe.only('DELETE /bookmarks/bookmark_id', () => {
+        context('Given no bookmarks', () => {
+            it('responds with 404', () => {
+                const idToRemove = 123456;
+
+                return supertest(app)
+                    .delete(`/bookmarks/${idToRemove}`)
+                    .expect(404, {error: {message: 'Bookmark doesn\'t exist'}});
+            });
+        });
+
+        context('Given there are bookmarks in the database', () => {
+            const testBookmarks = makeBookmarksArray();
+
+            beforeEach('insert bookmarks', () => {
+                return db 
+                    .into('bookmarks')
+                    .insert(testBookmarks);
+            });
+
+            it('responds with 204 an removes the bookmark', () => {
+                const idToRemove = 2;
+                const expectedBookmarks = testBookmarks.filter(bookmark => bookmark.id !== idToRemove);
+
+                return supertest(app)
+                    .delete(`/bookmarks/${idToRemove}`)
+                    .expect(204)
+                    .then(res =>
+                        supertest(app)
+                            .get('/bookmarks')
+                            .expect(expectedBookmarks)
+                    );
             });
         });
     });

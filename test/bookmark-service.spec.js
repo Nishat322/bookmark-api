@@ -3,6 +3,7 @@
 require('dotenv').config();
 const { expect } = require('chai');
 const knex = require('knex');
+const supertest = require('supertest');
 const BookmarkService = require('../src/bookmark/bookmark-service');
 const {makeBookmarksArray} = require('./bookmarks.fixtures');
 

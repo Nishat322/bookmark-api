@@ -26,6 +26,17 @@ function makeBookmarksArray(){
     ];
 }
 
+function makeMaliciousArray(){
+    return {
+        id: 911,
+        title: 'Naughty naughty very naughty <script>alert("xss");</script>',
+        url: 'http://malicious.com',
+        description: 'Bad image <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">. But not <strong>all</strong> bad.',
+        rating: '1',
+    };
+}
+
 module.exports = {
-    makeBookmarksArray
+    makeBookmarksArray,
+    makeMaliciousArray
 };
