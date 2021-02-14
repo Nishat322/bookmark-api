@@ -50,7 +50,7 @@ describe.only('Bookmark Endpoints', () => {
         });
     });
     
-    describe('GET /bookmarks/bookmark_id', () => {
+    describe.only('GET /bookmarks/bookmark_id', () => {
         context('Given there are no bookmarks in the database', () => {
             it('responds with 404', () => {
                 const bookmarkId = 123456;
@@ -78,9 +78,35 @@ describe.only('Bookmark Endpoints', () => {
                     .expect(200, expectedBookmark);
             });
         });
+
+        context('Given an XSS attack bookmark', () => {
+            const maliciousBookmark = {
+                id: 911,
+                title: 'Naughty naughty very naughty <script>alert("xss");</script>',
+                url: 'http://malicious.com',
+                description: 'Bad image <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">. But not <strong>all</strong> bad.',
+                rating: '1',
+            };
+            
+            beforeEach('insert malicious article', () => {
+                return db
+                    .into('bookmarks')
+                    .insert([ maliciousBookmark ]);
+            });
+            
+            it('removes XSS attack content', () => {
+                return supertest(app)
+                    .get(`/bookmarks/${maliciousBookmark.id}`)
+                    .expect(200)
+                    .expect(res => {
+                            expect(res.body.title).to.eql('Naughty naughty very naughty &lt;script&gt;alert("xss");&lt;/script&gt;');
+                            expect(res.body.description).to.eql('Bad image <img src="https://url.to.file.which/does-not.exist">. But not <strong>all</strong> bad.');
+                    });
+            });
+        });
     });
 
-    describe.only('POST /bookmarks', () => {
+    describe('POST /bookmarks', () => {
         it('creates a bookmark, responding with 201 and the new bookmark', () => {
             const newBookmark = {  
                 title: 'New Title',
@@ -88,7 +114,7 @@ describe.only('Bookmark Endpoints', () => {
                 description: 'A new bookmark',
                 rating: '5' 
             };
-            
+
             return supertest(app)
                 .post('/bookmarks')
                 .send(newBookmark)

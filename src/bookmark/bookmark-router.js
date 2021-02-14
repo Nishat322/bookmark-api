@@ -2,6 +2,7 @@
 /* eslint-disable indent */
 'use strict';
 const express = require('express');
+const xss = require('xss');
 const {v4: uuid} = require('uuid');
 const logger = require('../logger');
 const bookmarks = require('../store.js');
@@ -59,7 +60,13 @@ bookmarkRouter
                         .status(404)
                         .json({error: {message: 'Bookmark Not Found'}});
                 }
-                res.json(bookmark);
+                res.json({
+                    id: bookmark.id,
+                    title: xss(bookmark.title),
+                    url: bookmark.url,
+                    description: xss(bookmark.description),
+                    rating: bookmark.rating,
+                });
             })
             .catch(next);
     })
