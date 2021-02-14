@@ -22,19 +22,61 @@ describe.only('Bookmark Endpoints', () => {
 
     before('clean the table', () => db('bookmarks').truncate());
 
-    context('Given there are articles in the database', () => {
-        const testBookmarks = makeBookmarksArray();
+    afterEach('cleanup', () => db('bookmarks').truncate());
 
-        beforeEach('insert articles', () => {
-            return db   
-                .into('bookmarks')
-                .insert(testBookmarks);
+    describe('GET /bookmarks', () => {
+        context('Given there are no bookmarks in the database', () => {
+            it('responds with 200 and an empty array', () => {
+                return supertest(app)
+                    .get('/bookmarks')
+                    .expect(200, []);
+            });
         });
 
-        it('GET /bookmarks responds with 200 and all the bookmarks', () => {
-            return supertest(app)
-                .get('/bookmarks')
-                .expect(200, testBookmarks);
+        context('Given there are bookmarks in the database', () => {
+            const testBookmarks = makeBookmarksArray();
+    
+            beforeEach('insert bookmark', () => {
+                return db   
+                    .into('bookmarks')
+                    .insert(testBookmarks);
+            });
+    
+            it('GET /bookmarks responds with 200 and all the bookmarks', () => {
+                return supertest(app)
+                    .get('/bookmarks')
+                    .expect(200, testBookmarks);
+            });
+        });
+    });
+    
+    describe('GET /bookmarks/bookmark_id', () => {
+        context('Given there are no bookmarks in the database', () => {
+            it('responds with 404', () => {
+                const bookmarkId = 123456;
+
+                return supertest(app)
+                    .get(`/bookmarks/${bookmarkId}`)
+                    .expect(404, {error: {message: 'Bookmark Not Found'}});
+            });
+        });
+
+        context('Given there are bookmarks in the database', () => {
+            const testBookmarks = makeBookmarksArray();
+            beforeEach('insert bookmark', () => {
+                return db   
+                    .into('bookmarks')
+                    .insert(testBookmarks);
+            });
+
+            it('GET /bookmarks/bookmark_id responds with 200 and the specified bookmark', () => {
+                const bookmarkId = 2;
+                const expectedBookmark = testBookmarks[bookmarkId -1];
+        
+                return supertest(app)
+                    .get(`/bookmarks/${bookmarkId}`)
+                    .expect(200, expectedBookmark);
+            });
         });
     });
 });
