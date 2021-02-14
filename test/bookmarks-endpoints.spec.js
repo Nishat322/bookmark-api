@@ -82,22 +82,22 @@ describe.only('Bookmark Endpoints', () => {
 
     describe.only('POST /bookmarks', () => {
         it('creates a bookmark, responding with 201 and the new bookmark', () => {
-            const newBookamrk = {  
+            const newBookmark = {  
                 title: 'New Title',
                 url: 'https://www.newbookmark.com',
                 description: 'A new bookmark',
                 rating: '5' 
             };
-
+            
             return supertest(app)
                 .post('/bookmarks')
-                .send(newBookamrk)
+                .send(newBookmark)
                 .expect(201)
                 .expect(res => {
-                    expect(res.body.title).to.eql(newBookamrk.title);
-                    expect(res.body.url).to.eql(newBookamrk.url);
-                    expect(res.body.description).to.eql(newBookamrk.description);
-                    expect(res.body.rating).to.eql(newBookamrk.rating);
+                    expect(res.body.title).to.eql(newBookmark.title);
+                    expect(res.body.url).to.eql(newBookmark.url);
+                    expect(res.body.description).to.eql(newBookmark.description);
+                    expect(res.body.rating).to.eql(newBookmark.rating);
                     expect(res.headers.location).to.eql(`/bookmarks/${res.body.id}`);
                 })
                 .then(postRes =>
@@ -105,6 +105,27 @@ describe.only('Bookmark Endpoints', () => {
                         .get(`/bookmarks/${postRes.body.id}`)
                         .expect(postRes.body)
                 );
+        });
+
+        const requiredFields = ['title', 'url', 'description', 'rating'];
+
+        requiredFields.forEach(field => {
+            const newBookmark = {  
+                title: 'New Title',
+                url: 'https://www.newbookmark.com',
+                description: 'A new bookmark',
+                rating: '5' 
+            };
+            
+
+            it(`responds with 400 and an error message when the '${field}' is missing`, () => {
+                delete newBookmark[field];
+
+                return supertest(app)
+                    .post('/bookmarks')
+                    .send(newBookmark)
+                    .expect(400, {error: {message: `Missing '${field}' in the request body`}});
+            });
         });
     });
 });

@@ -25,13 +25,13 @@ bookmarkRouter
         const newBookmark = {title, url, description, rating};
         const knexInstance = req.app.get('db');
 
-        if(!newBookmark.title){
-            logger.error('Title is required');
-            return res.status(400).json('Title is missing');
-        }
-        if(!newBookmark.url){
-            logger.error('Url is required');
-            return res.status(400).json('Url is missing');
+        for (const [key,value] of Object.entries(newBookmark)){
+            if(value == null){
+                logger.error(`${key} is required`);
+                return res  
+                        .status(400)
+                        .json({error: {message: `Missing '${key}' in the request body`}});
+            }
         }
 
         BookmarkService.insertBookmark(knexInstance, newBookmark)
