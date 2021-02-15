@@ -26,7 +26,7 @@ app.get('/', (req,res) => {
   res.status(200).send('Hello, world!');
 });
 
-app.use(bookmarkRouter);
+app.use('/api', bookmarkRouter);
 app.use(errorHandler);
     
 module.exports = app;
